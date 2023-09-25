@@ -1,0 +1,31 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+}
+
+.react-flow__node-controlNode {
+  height: 50px;
+  border: 1px solid #eee;
+  padding: 5px;
+  border-radius: 5px;
+  background: white;
+}
+
+.react-flow__node-decisionNode {
+  height: 32px;
+  border: 1px solid #eee;
+  padding: 5px;
+  border-radius: 5px;
+  background: white;
+}
+
+.panel-content {
+  height: 120px;
+  border: 2px solid #eee;
+  border-radius: 4px;
+  background: white;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
