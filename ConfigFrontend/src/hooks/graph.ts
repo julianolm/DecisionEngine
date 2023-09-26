@@ -25,20 +25,19 @@ const initialNodes = [
     type: NodeType.DecisionNode,
     position: { x: -100, y: 250 },
     data: { decision: "yes" },
-    style: { background: "#89dd68" },
+    style: { borderColor: "#89dd68" },
   },
   {
     id: "4",
     type: NodeType.DecisionNode,
     position: { x: 100, y: 250 },
     data: { decision: "no" },
-    style: { background: "#dd6868" },
+    style: { borderColor: "#dd6868" },
   },
 ];
 const initialEdges = [
   {
     id: "e1-2",
-    // type: "smoothstep",
     source: "1",
     sourceHandle: null,
     target: "2",
@@ -46,7 +45,6 @@ const initialEdges = [
   },
   {
     id: "e2-3-yes",
-    // type: "smoothstep",
     source: "2",
     sourceHandle: "yes",
     target: "3",
@@ -55,7 +53,6 @@ const initialEdges = [
   },
   {
     id: "e2-3-no",
-    // type: "smoothstep",
     source: "2",
     sourceHandle: "no",
     target: "4",

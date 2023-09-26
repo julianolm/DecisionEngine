@@ -1,5 +1,7 @@
-import React, { memo, useState } from "react";
+import { memo } from "react";
 import { Handle, Position } from "reactflow";
+
+import "./CustomNodes.css"
 
 type DecisionNodeProps = {
   data: {

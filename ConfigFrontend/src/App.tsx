@@ -123,7 +123,7 @@ const LayoutFlow = () => {
     setNodes((nds) => nds.concat(newNode));
   }, [setNodes]);
 
-  const onAddDecision = useCallback(() => {
+  const onAddDecision = useCallback((decision) => {
     const newNode = {
       id: getNodeId(),
       type: "decisionNode",
@@ -147,6 +147,7 @@ const LayoutFlow = () => {
       const pane = reactFlowRef.current.getBoundingClientRect();
       setMenu({
         id: node.id,
+        data: node.data,
         top: event.clientY < pane.height - 200 && event.clientY,
         left: event.clientX < pane.width - 200 && event.clientX,
         right: event.clientX >= pane.width - 200 && pane.width - event.clientX,

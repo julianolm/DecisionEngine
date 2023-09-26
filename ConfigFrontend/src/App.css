@@ -3,20 +3,32 @@
   height: 100vh;
 }
 
-.react-flow__node-controlNode {
-  height: 50px;
-  border: 1px solid #eee;
+.react-flow__node-input {
   padding: 5px;
+  height: 25px;
+  width: 120px;
+}
+
+.react-flow__node-controlNode {
+  padding: 5px;
+  height: 25px;
+  width: 120px;
+  border: 1px solid #eee;
   border-radius: 5px;
   background: white;
+  font-size: 10px;
 }
 
 .react-flow__node-decisionNode {
-  height: 32px;
-  border: 1px solid #eee;
   padding: 5px;
+  height: 25px;
+  width: 120px;
+  border: 1px solid #eee;
   border-radius: 5px;
   background: white;
+  /* background: "#89dd68"; */
+  /* background: "#dd6868"; */
+  font-size: 10px;
 }
 
 .panel-content {
