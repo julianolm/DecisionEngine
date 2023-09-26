@@ -1,19 +1,27 @@
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
 
-import "./CustomNodes.css"
+import "./CustomNodes.css";
 
 type ControlNodeProps = {
   data: {
+    label: string;
     parameter: string;
     operator: string;
-    onChange: (value: string) => void;
     value: string;
   };
   isConnectable: boolean;
 };
 
 export const ControlNode = memo(({ data, isConnectable }: ControlNodeProps) => {
+  const [content, setContent] = useState<string>(data.label);
+
+  useEffect(() => {
+    if (!(data.parameter && data.operator && data.value)) return;
+    const nodeContent = `${data.parameter} ${data.operator} ${data.value}`;
+    setContent(nodeContent);
+  }, [data.parameter, data.operator, data.value]);
+
   return (
     <div className="control-node">
       <Handle
@@ -22,9 +30,7 @@ export const ControlNode = memo(({ data, isConnectable }: ControlNodeProps) => {
         isConnectable={isConnectable}
       />
       <div style={{ padding: "8px" }}>
-        <span>
-          {data.parameter} {data.operator} {data.value}
-        </span>
+        <span>{content}</span>
       </div>
       <Handle
         type="source"

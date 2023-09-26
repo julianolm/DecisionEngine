@@ -1,14 +1,34 @@
 import { useEffect, useState } from "react";
-import { useReactFlow } from "reactflow";
+import { useReactFlow, Node } from "reactflow";
+
+import { NodeType } from "./types";
 
 import "./ControlNodeMenu.css";
+
+const ParamSelector = ({
+  selected,
+  onChange,
+}: {
+  selected?: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}) => (
+  <select defaultValue={selected ? selected : ""} onChange={onChange}>
+    <option value="" disabled hidden>
+      --
+    </option>
+    <option value="age">age</option>
+    <option value="income">income</option>
+    <option value="net worth">net worth</option>
+    <option value="dependants">dependants</option>
+  </select>
+);
 
 const OperatorSelector = ({
   selected,
   onChange,
 }: {
   selected?: string;
-  onChange: () => void;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }) => {
   const operators = ["==", "!=", ">", "<", ">=", "<="];
 
@@ -26,30 +46,12 @@ const OperatorSelector = ({
   );
 };
 
-const ParamSelector = ({
-  selected,
-  onChange,
-}: {
-  selected?: string;
-  onChange: () => void;
-}) => (
-  <select defaultValue={selected ? selected : ""} onChange={onChange}>
-    <option value="" disabled hidden>
-      --
-    </option>
-    <option value="age">age</option>
-    <option value="name">income</option>
-    <option value="name">net worth</option>
-    <option value="name">dependants</option>
-  </select>
-);
-
 const ValueInput = ({
   value,
   onChange,
 }: {
   value?: string;
-  onChange: () => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => (
   <input
     type="text"
@@ -60,6 +62,15 @@ const ValueInput = ({
   />
 );
 
+export type ControlNodeMenuProps = {
+  id: string;
+  data: Node["data"];
+  top?: number;
+  left?: number;
+  right?: number;
+  bottom?: number;
+};
+
 export function ControlNodeMenu({
   id,
   data,
@@ -68,20 +79,22 @@ export function ControlNodeMenu({
   right,
   bottom,
   ...props
-}) {
+}: ControlNodeMenuProps) {
   const [parameter, setParameter] = useState(data.parameter);
   const [operator, setOperator] = useState(data.operator);
   const [value, setValue] = useState(data.value);
 
-  const { getNode, setNodes, addNodes, setEdges } = useReactFlow();
+  const { getNode, setNodes } = useReactFlow();
 
-  const onChangeParameter = (event) => {
+  const node = getNode(id);
+
+  const onChangeParameter = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setParameter(event.target.value);
   };
-  const onChangeOperator = (event) => {
+  const onChangeOperator = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setOperator(event.target.value);
   };
-  const onChangeValue = (event) => {
+  const onChangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
 
@@ -115,6 +128,8 @@ export function ControlNodeMenu({
     );
   }, [value, id, setNodes]);
 
+  if (!node || node.type !== NodeType.ControlNode) return;
+
   return (
     <div
       style={{ top, left, right, bottom }}
@@ -126,15 +141,18 @@ export function ControlNodeMenu({
       </p>
       <div className="update-option">
         <button onClick={() => {}}>Parameter</button>
-        <ParamSelector selected={parameter} onChange={onChangeParameter} />
+        <ParamSelector selected={data.parameter} onChange={onChangeParameter} />
       </div>
       <div className="update-option">
         <button onClick={() => {}}>Operator</button>
-        <OperatorSelector selected={operator} onChange={onChangeOperator} />
+        <OperatorSelector
+          selected={data.operator}
+          onChange={onChangeOperator}
+        />
       </div>
       <div className="update-option">
         <button onClick={() => {}}>Value</button>
-        <ValueInput value={value} onChange={onChangeValue} />
+        <ValueInput value={data.value} onChange={onChangeValue} />
       </div>
     </div>
   );

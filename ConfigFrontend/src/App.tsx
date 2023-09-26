@@ -12,15 +12,29 @@ import ReactFlow, {
   useReactFlow,
   ReactFlowProvider,
   MarkerType,
+  Node,
+  Edge,
+  OnConnect,
+  IsValidConnection,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
 import "./App.css";
-import { nodeTypes, ControlNodeMenu, NodeType } from "./components/customNodes";
+import {
+  nodeTypes,
+  ControlNodeMenu,
+  NodeType,
+  ControlNodeMenuProps,
+} from "./components/customNodes";
 import { useGraph } from "./hooks/graph";
+import { Connection } from "./types";
 
 const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-const getLayoutedElements = (nodes, edges, options) => {
+const getLayoutedElements = (
+  nodes: Node[],
+  edges: Edge[],
+  options: { direction: string }
+) => {
   g.setGraph({ rankdir: options.direction });
 
   edges.forEach((edge) => g.setEdge(edge.source, edge.target));
@@ -41,15 +55,18 @@ const getLayoutedElements = (nodes, edges, options) => {
 const getNodeId = () => `node_${+new Date()}`;
 
 const LayoutFlow = () => {
-  const { fitView, getNode, getNodes, addNodes } = useReactFlow();
+  const { fitView, getNode, addNodes } = useReactFlow();
   const { initialNodes, initialEdges } = useGraph();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [menu, setMenu] = useState(null);
-  const reactFlowRef = useRef(null);
+  
+
+  const [menu, setMenu] = useState<ControlNodeMenuProps | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const reactFlowRef = useRef<any>(null);
 
   const onLayout = useCallback(
-    (direction) => {
+    (direction: string) => {
       const layouted = getLayoutedElements(nodes, edges, { direction });
 
       setNodes([...layouted.nodes]);
@@ -59,10 +76,10 @@ const LayoutFlow = () => {
         fitView();
       });
     },
-    [nodes, edges]
+    [nodes, edges, fitView, setEdges, setNodes]
   );
 
-  const getConnectionType = (sourceNode, targetNode) => {
+  const getConnectionType = (sourceNode: Node, targetNode: Node) => {
     if (sourceNode.type === "input" && targetNode.type === "controlNode")
       return "start-control";
     if (sourceNode.type === "controlNode" && targetNode.type === "decisionNode")
@@ -73,9 +90,9 @@ const LayoutFlow = () => {
     return "invalid";
   };
 
-  const isValidConnection = (connection) => {
+  const isValidConnection: IsValidConnection = (connection: Connection) => {
     const { source, target, sourceHandle } = connection;
-    if (source === target) return false;
+    if (!source || !target || source === target) return false;
     if (
       edges.find(
         (edge) =>
@@ -88,22 +105,30 @@ const LayoutFlow = () => {
 
     const sourceNode = getNode(source);
     const targetNode = getNode(target);
-    // o reactflow so vai chamar essa funcao se os nos com esses ids existirem,
-    // mas o typescript vai reclamar
+
+    if (!sourceNode || !targetNode) return false;
     const connectionType = getConnectionType(sourceNode, targetNode);
+
     if (connectionType === "invalid") return false;
 
     return true;
   };
 
-  const onConnect = useCallback(
-    (params) => {
-      const sourceNode = getNode(params.source);
-      const targetNode = getNode(params.target);
+  const onConnect: OnConnect = useCallback(
+    (connection) => {
+      if (!connection.source || !connection.target) return;
 
-      const newEdge = {
-        ...params,
+      const sourceNode = getNode(connection.source);
+      const id = `${connection.source}-${connection.target}-${connection.sourceHandle}}`;
+
+      const newEdge: Edge = {
+        id,
+        source: connection.source,
+        sourceHandle: connection.sourceHandle,
+        target: connection.target,
+        targetHandle: connection.targetHandle,
         markerEnd: { type: MarkerType.ArrowClosed },
+        label: "",
       };
 
       if (sourceNode && sourceNode.type === NodeType.ControlNode) {
@@ -111,14 +136,14 @@ const LayoutFlow = () => {
       }
       setEdges((eds) => addEdge(newEdge, eds));
     },
-    [setEdges]
+    [setEdges, getNode]
   );
 
   const onAddControl = useCallback(() => {
     const newNode = {
       id: getNodeId(),
       type: "controlNode",
-      data: {},
+      data: { label: "right-click to edit" },
       position: {
         x: 20 + Math.random() * 100,
         y: 20 + Math.random() * 100,
@@ -153,18 +178,23 @@ const LayoutFlow = () => {
   }, [nodes, edges]);
 
   const onNodeContextMenu = useCallback(
-    (event, node) => {
+    (event: React.MouseEvent, node: Node) => {
       event.preventDefault();
 
-      const pane = reactFlowRef.current.getBoundingClientRect();
+      const pane = reactFlowRef?.current?.getBoundingClientRect();
       setMenu({
         id: node.id,
         data: node.data,
-        top: event.clientY < pane.height - 200 && event.clientY,
-        left: event.clientX < pane.width - 200 && event.clientX,
-        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+        top: event.clientY < pane.height - 200 ? event.clientY : undefined,
+        left: event.clientX < pane.width - 200 ? event.clientX : undefined,
+        right:
+          event.clientX >= pane.width - 200
+            ? pane.width - event.clientX
+            : undefined,
         bottom:
-          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+          event.clientY >= pane.height - 200
+            ? pane.height - event.clientY
+            : undefined,
       });
     },
     [setMenu]

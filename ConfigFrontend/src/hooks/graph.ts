@@ -14,9 +14,9 @@ const initialNodes = [
     type: NodeType.ControlNode,
     position: { x: 0, y: 100 },
     data: {
+      label: "right-click to edit",
       parameter: "age",
       operator: ">",
-      onChange: () => {},
       value: "18",
     },
   },
@@ -24,14 +24,14 @@ const initialNodes = [
     id: "3",
     type: NodeType.DecisionNode,
     position: { x: -100, y: 250 },
-    data: { decision: "yes" },
+    data: { label: "right-click to edit", decision: "yes" },
     style: { borderColor: "#89dd68" },
   },
   {
     id: "4",
     type: NodeType.DecisionNode,
     position: { x: 100, y: 250 },
-    data: { decision: "no" },
+    data: { label: "right-click to edit", decision: "no" },
     style: { borderColor: "#dd6868" },
   },
 ];
