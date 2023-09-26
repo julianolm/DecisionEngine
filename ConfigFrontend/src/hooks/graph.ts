@@ -48,7 +48,7 @@ const initialEdges = [
     source: "2",
     sourceHandle: "yes",
     target: "3",
-    label: "yes",
+    label: "true",
     markerEnd: { type: MarkerType.ArrowClosed },
   },
   {
@@ -56,7 +56,7 @@ const initialEdges = [
     source: "2",
     sourceHandle: "no",
     target: "4",
-    label: "no",
+    label: "false",
     markerEnd: { type: MarkerType.ArrowClosed },
   },
 ];

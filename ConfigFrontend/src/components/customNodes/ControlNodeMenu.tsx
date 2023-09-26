@@ -38,7 +38,9 @@ const ParamSelector = ({
       --
     </option>
     <option value="age">age</option>
-    <option value="name">name</option>
+    <option value="name">income</option>
+    <option value="name">net worth</option>
+    <option value="name">dependants</option>
   </select>
 );
 

@@ -107,7 +107,7 @@ const LayoutFlow = () => {
       };
 
       if (sourceNode && sourceNode.type === NodeType.ControlNode) {
-        newEdge.label = newEdge.sourceHandle;
+        newEdge.label = newEdge.sourceHandle === "yes" ? "true" : "false";
       }
       setEdges((eds) => addEdge(newEdge, eds));
     },
