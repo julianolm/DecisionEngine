@@ -16,7 +16,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 
 import "./App.css";
-import { nodeTypes, ControlNodeMenu } from "./components/customNodes";
+import { nodeTypes, ControlNodeMenu, NodeType } from "./components/customNodes";
 import { useGraph } from "./hooks/graph";
 
 const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -105,6 +105,10 @@ const LayoutFlow = () => {
         ...params,
         markerEnd: { type: MarkerType.ArrowClosed },
       };
+
+      if (sourceNode && sourceNode.type === NodeType.ControlNode) {
+        newEdge.label = newEdge.sourceHandle;
+      }
       setEdges((eds) => addEdge(newEdge, eds));
     },
     [setEdges]
@@ -123,18 +127,26 @@ const LayoutFlow = () => {
     setNodes((nds) => nds.concat(newNode));
   }, [setNodes]);
 
-  const onAddDecision = useCallback((decision) => {
-    const newNode = {
-      id: getNodeId(),
-      type: "decisionNode",
-      data: {},
-      position: {
-        x: 20 + Math.random() * 100,
-        y: 20 + Math.random() * 100,
-      },
-    };
-    addNodes(newNode);
-  }, [addNodes]);
+  const onAddDecision = useCallback(
+    (decision: string) => {
+      const newNode = {
+        id: getNodeId(),
+        type: "decisionNode",
+        data: {
+          decision,
+        },
+        position: {
+          x: 20 + Math.random() * 100,
+          y: 20 + Math.random() * 100,
+        },
+        style: {
+          borderColor: decision === "yes" ? "#89dd68" : "#dd6868",
+        },
+      };
+      addNodes(newNode);
+    },
+    [addNodes]
+  );
 
   const onSave = useCallback(() => {
     console.log(nodes, edges);
@@ -184,7 +196,10 @@ const LayoutFlow = () => {
               save
             </button>
             <button onClick={onAddControl}>add control node</button>
-            <button onClick={onAddDecision}>add decision node</button>
+            <button onClick={() => onAddDecision("yes")}>
+              add decision yes
+            </button>
+            <button onClick={() => onAddDecision("no")}>add decision no</button>
           </div>
         </Panel>
         <Panel position="top-right">
